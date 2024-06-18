@@ -56,4 +56,11 @@ class AuthController extends Controller
         // Jika autentikasi gagal atau user tidak memiliki role yang sesuai
         return redirect()->back()->with('error', 'Username atau password salah.');
     }
+
+    public function logout()
+    {
+        Auth::logout();
+
+        return view('welcome');
+    }
 }

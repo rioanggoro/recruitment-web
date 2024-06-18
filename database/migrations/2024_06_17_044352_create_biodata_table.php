@@ -13,25 +13,25 @@ return new class extends Migration
     {
         Schema::create('biodata', function (Blueprint $table) {
             $table->id();
-            $table->string('nik');
-            $table->enum('jenis_kelamin', ['Pria', 'Wanita']);
-            $table->string('tempat_lahir');
-            $table->date('tanggal_lahir');
-            $table->enum('agama', ['Islam', 'Kristen Protestan', 'Katolik', 'Hindu', 'Buddha', 'Konghucu', 'lainnya']);
-            $table->text('alamat');
-            $table->enum('status', ['Menikah', 'Belum Menikah']);
-            $table->enum('pendidikan_terakhir', ['SD (Sekolah Dasar)', 'SMP (Sekolah Menengah Pertama)', 'SMA (Sekolah Menengah Atas) / SMK (Sekolah Menengah Kejuruan)', 'D1 (Diploma 1)', 'D2 (Diploma 2)', 'D3 (Diploma 3)', 'D4 (Diploma 4)', 'Sarjana (S1)', 'Magister (S2)', 'Doktor (S3)']);
-            $table->string('email');
-            $table->string('nomor_hp');
+            $table->string('nik')->nullable();
+            $table->enum('jenis_kelamin', ['Pria', 'Wanita'])->nullable();
+            $table->string('tempat_lahir')->nullable();
+            $table->date('tanggal_lahir')->nullable();
+            $table->enum('agama', ['Islam', 'Kristen Protestan', 'Katolik', 'Hindu', 'Buddha', 'Konghucu', 'lainnya'])->nullable();
+            $table->text('alamat')->nullable();
+            $table->enum('status', ['Menikah', 'Belum Menikah'])->nullable();
+            $table->enum('pendidikan_terakhir', ['SD (Sekolah Dasar)', 'SMP (Sekolah Menengah Pertama)', 'SMA (Sekolah Menengah Atas) / SMK (Sekolah Menengah Kejuruan)', 'D1 (Diploma 1)', 'D2 (Diploma 2)', 'D3 (Diploma 3)', 'D4 (Diploma 4)', 'Sarjana (S1)', 'Magister (S2)', 'Doktor (S3)'])->nullable();
+            $table->string('email')->nullable();
+            $table->string('nomor_hp')->nullable();
             //mulai dari sini adalah field untuk menyimpan nama berkas yang di upload
-            $table->text('cv');
-            $table->text('ijazah');
-            $table->text('ktp');
-            $table->text('foto');
-            $table->text('surat_pengalaman_kerja');
-            $table->text('surat_keterangan_sehat');
-            $table->text('skck');
-            $table->text('transkrip_nilai');
+            $table->text('cv')->nullable();
+            $table->text('ijazah')->nullable();
+            $table->text('ktp')->nullable();
+            $table->text('foto')->nullable();
+            $table->text('surat_pengalaman_kerja')->nullable();
+            $table->text('surat_keterangan_sehat')->nullable();
+            $table->text('skck')->nullable();
+            $table->text('transkrip_nilai')->nullable();
             //foreign key
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
