@@ -26,17 +26,21 @@
                     $notifCount = auth()->user()->unreadNotifications->count();
                 @endphp
 
-                <a href="/admin/notifikasi" class='sidebar-link relative flex items-center gap-2'>
-                    <i class="bi bi-bell"></i>
-                    <span>Notifikasi</span>
+                <a href="/admin/notifikasi" class='sidebar-link relative flex items-center justify-between'>
+                    <div class="flex items-center gap-2">
+                        <i class="bi bi-bell"></i>
+                        <span>Notifikasi</span>
+                    </div>
 
                     @if ($notifCount > 0)
-                        <span class="absolute top-1.5 right-3 w-2.5 h-2.5 bg-red-600 rounded-full animate-ping"></span>
-                        <span class="absolute top-1.5 right-3 w-2.5 h-2.5 bg-red-600 rounded-full"></span>
+                        <span
+                            class="absolute top-0 right-0 -mt-1 -mr-2 text-danger text-xs font-bold px-1.5 py-0.5 rounded-full">
+                            {{ $notifCount }}
+                        </span>
                     @endif
                 </a>
-            </li>
 
+            </li>
             <li class="sidebar-item">
                 <a href="/admin/logout" class='sidebar-link'>
                     <i class="bi bi-box-arrow-right"></i>

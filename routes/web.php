@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PelamarController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Notification;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,7 +52,12 @@ Route::group(['middleware' => 'role:admin'], function () {
         return back();
     })->name('notifications.markRead');
 
+    Route::delete('/notifications/{id}', function ($id) {
+        $notification = auth()->user()->notifications()->findOrFail($id);
+        $notification->delete();
 
+        return back()->with('success', 'Notifikasi berhasil dihapus.');
+    })->name('notifications.destroy');
     Route::get('/admin/logout', [AuthController::class, 'logout']);
 });
 

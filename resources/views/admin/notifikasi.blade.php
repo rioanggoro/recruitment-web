@@ -9,50 +9,80 @@
         @if (auth()->user()->unreadNotifications->count() > 0)
             <form method="POST" action="{{ route('notifications.markRead') }}" class="mb-4">
                 @csrf
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">
+                <button type="submit" class="btn btn-primary btn-sm">
                     Tandai semua sebagai dibaca
                 </button>
             </form>
         @endif
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-gray-900 text-white text-sm rounded-lg overflow-hidden shadow">
-                <thead class="bg-gray-700 text-gray-300 text-left">
+        <div class="table-responsive bg-dark p-3 rounded shadow">
+            <table class="table table-dark table-bordered table-striped table-hover text-sm align-middle mb-0">
+                <thead class="table-secondary text-dark">
                     <tr>
-                        <th class="px-4 py-3">#</th>
-                        <th class="px-4 py-3">Nama Pelamar</th>
-                        <th class="px-4 py-3">Waktu</th>
-                        <th class="px-4 py-3 text-center">Status</th>
-                        <th class="px-4 py-3 text-center">Aksi</th>
+                        <th>#</th>
+                        <th>Nama Pelamar</th>
+                        <th>Waktu</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse(auth()->user()->notifications as $i => $notif)
-                        <tr class="border-t border-gray-700 hover:bg-gray-800">
-                            <td class="px-4 py-3">{{ $i + 1 }}</td>
-                            <td class="px-4 py-3">
-                                {{ $notif->data['name'] ?? 'Tidak diketahui' }}
-                            </td>
-                            <td class="px-4 py-3">
-                                {{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}
-                            </td>
-                            <td class="px-4 py-3 text-center">
+                        <tr>
+                            <td>{{ $i + 1 }}</td>
+                            <td>{{ $notif->data['pelamar_name'] ?? 'Tidak diketahui' }}</td>
+                            <td>{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}</td>
+                            <td class="text-center">
                                 @if (is_null($notif->read_at))
-                                    <span class="bg-yellow-400 text-black text-xs px-2 py-0.5 rounded-full">Baru</span>
+                                    <span class="badge bg-warning text-dark">Baru</span>
                                 @else
-                                    <span class="bg-green-600 text-white text-xs px-2 py-0.5 rounded-full">Dibaca</span>
+                                    <span class="badge bg-success">Dibaca</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-center">
-                                <a href="/admin/manage-loker"
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs">
+                            <td class="text-center">
+                                <a href="/admin/manage-loker" class="btn btn-sm btn-light border me-1">
                                     Lihat
                                 </a>
+
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#deleteNotifModal{{ $notif->id }}">
+                                    Hapus
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="deleteNotifModal{{ $notif->id }}" tabindex="-1"
+                                    aria-labelledby="deleteNotifModalLabel{{ $notif->id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content bg-dark text-white">
+                                            <div class="modal-header border-0">
+                                                <h5 class="modal-title" id="deleteNotifModalLabel{{ $notif->id }}">
+                                                    Konfirmasi Hapus Notifikasi
+                                                </h5>
+                                                <button type="button" class="btn-close btn-close-white"
+                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Apakah Anda yakin ingin menghapus notifikasi ini?
+                                            </div>
+                                            <div class="modal-footer border-0">
+                                                <form action="{{ route('notifications.destroy', $notif->id) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                                                </form>
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Batal</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center text-gray-400 py-4">
+                            <td colspan="5" class="text-center text-muted py-4">
                                 Tidak ada notifikasi masuk.
                             </td>
                         </tr>
