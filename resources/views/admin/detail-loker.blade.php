@@ -58,7 +58,8 @@
                                             <td>{{ $item->user->biodata->jenis_kelamin }}</td>
                                             <td>{{ $item->user->biodata->pendidikan_terakhir }}</td>
                                             <td class="text-center">
-                                                <a href="/admin/detail-pelamar/{{ $item->user->id }}" class="btn btn-primary btn-sm me-2">Detail Profile</a>
+                                                <a href="/admin/detail-pelamar/{{ $item->user->id }}"
+                                                    class="btn btn-primary btn-sm me-2">Detail Profile</a>
                                                 <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#editStatusModalSeleksi{{ $item->id }}">Edit
                                                     Status</button>
@@ -71,7 +72,8 @@
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title"
-                                                            id="editStatusModalLabel{{ $item->id }}">Ubah Status Lamaran
+                                                            id="editStatusModalLabel{{ $item->id }}">Ubah Status
+                                                            Lamaran
                                                         </h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
@@ -136,7 +138,8 @@
                                             <td>{{ $item->user->biodata->jenis_kelamin }}</td>
                                             <td>{{ $item->user->biodata->pendidikan_terakhir }}</td>
                                             <td class="text-center">
-                                                <a href="/admin/detail-pelamar/{{ $item->user->id }}" class="btn btn-primary btn-sm me-2">Detail Profile</a>
+                                                <a href="/admin/detail-pelamar/{{ $item->user->id }}"
+                                                    class="btn btn-primary btn-sm me-2">Detail Profile</a>
                                                 <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#editStatusModalWawancara{{ $item->id }}">Edit
                                                     Status</button>
@@ -214,7 +217,8 @@
                                             <td>{{ $item->user->biodata->jenis_kelamin }}</td>
                                             <td>{{ $item->user->biodata->pendidikan_terakhir }}</td>
                                             <td class="text-center">
-                                                <a href="/admin/detail-pelamar/{{ $item->user->id }}" class="btn btn-primary btn-sm me-2">Detail Profile</a>
+                                                <a href="/admin/detail-pelamar/{{ $item->user->id }}"
+                                                    class="btn btn-primary btn-sm me-2">Detail Profile</a>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -248,7 +252,8 @@
                                             <td>{{ $item->user->biodata->jenis_kelamin }}</td>
                                             <td>{{ $item->user->biodata->pendidikan_terakhir }}</td>
                                             <td class="text-center">
-                                                <a href="/admin/detail-pelamar/{{ $item->user->id }}" class="btn btn-primary btn-sm me-2">Detail Profile</a>
+                                                <a href="/admin/detail-pelamar/{{ $item->user->id }}"
+                                                    class="btn btn-primary btn-sm me-2">Detail Profile</a>
                                             </td>
                                         </tr>
                                     @endforeach

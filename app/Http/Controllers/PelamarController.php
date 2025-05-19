@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Notifications\LamaranMasukNotification;
 
 class PelamarController extends Controller
 {
@@ -470,11 +471,17 @@ class PelamarController extends Controller
         $lamaran->status_lamaran = 'seleksi';
         $lamaran->user_id = Auth::id();
         $lamaran->loker_id = $id;
-
         $lamaran->save();
+
+        // Kirim notifikasi ke semua admin
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new LamaranMasukNotification(Auth::user()));
+        }
 
         return redirect()->back()->with('success', 'Anda Berhasil Melamar Pekerjaan Ini');
     }
+
 
     public function lamaran()
     {

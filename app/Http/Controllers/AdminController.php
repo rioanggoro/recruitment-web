@@ -7,6 +7,8 @@ use App\Models\Lamaran;
 use App\Models\Loker;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Notifications\LamaranDitolakNotification;
+
 
 class AdminController extends Controller
 {
@@ -121,26 +123,26 @@ class AdminController extends Controller
 
     public function destroy_loker($id)
     {
-        // Cari devisi berdasarkan ID
+        // Cari loker berdasarkan ID
         $loker = Loker::find($id);
 
         if (!$loker) {
             return redirect()->back()->with('error', 'Loker tidak ditemukan.');
         }
 
-        // Cek apakah devisi digunakan dalam tabel "loker"
-        $lamaranCount = Lamaran::where('loker_id', $id)->count();
+        // (hapus pengecekan pelamar)
 
-        if ($lamaranCount > 0) {
-            return redirect()->back()->with('error', 'Loker tidak dapat dihapus karena sudah terdapat pelamar pada loker ini.');
-        }
+        // Hapus data lamaran yang berelasi terlebih dahulu (opsional, kalau ingin bersih)
+        Lamaran::where('loker_id', $id)->delete();
 
+        // Hapus loker
         if ($loker->delete()) {
             return redirect()->back()->with('success', 'Loker berhasil dihapus.');
         } else {
-            return redirect()->back()->with('error', 'Loker Gagal Dihapus');
+            return redirect()->back()->with('error', 'Loker gagal dihapus.');
         }
     }
+
 
     public function detail_loker($id)
     {
@@ -158,12 +160,25 @@ class AdminController extends Controller
     {
         $lamaran = Lamaran::find($id);
 
-        $lamaran->status_lamaran = $request->status_lamaran;
+        // Cek apakah lamaran ditemukan
+        if (!$lamaran) {
+            return redirect()->back()->with('error', 'Data lamaran tidak ditemukan.');
+        }
 
+        // Simpan status baru
+        $lamaran->status_lamaran = $request->status_lamaran;
         $lamaran->save();
+
+        // Jika status diubah menjadi "ditolak", kirim notifikasi ke pelamar
+        if ($request->status_lamaran === 'ditolak') {
+            $pelamar = $lamaran->user;
+            $loker = $lamaran->loker;
+            $pelamar->notify(new LamaranDitolakNotification($loker->title));
+        }
 
         return redirect()->back()->with('success', 'Berhasil Mengubah Status Lamaran');
     }
+
 
     public function detail_user($id)
     {
