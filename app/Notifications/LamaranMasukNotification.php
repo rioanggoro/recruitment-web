@@ -11,6 +11,14 @@ class LamaranMasukNotification extends Notification
 
     public $pelamar;
 
+    /*************  ✨ Windsurf Command ⭐  *************/
+    /**
+     * Create a new notification instance.
+     *
+     * @param  \App\Models\Pelamar  $pelamar
+     * @return void
+     */
+    /*******  eee94251-7939-4380-9eda-0ce5ff27cd1e  *******/
     public function __construct($pelamar)
     {
         $this->pelamar = $pelamar;
@@ -25,8 +33,8 @@ class LamaranMasukNotification extends Notification
     {
         return [
             'message' => 'Lamaran baru dari ' . $this->pelamar->name,
-            'link' => url('/admin/detail-loker')
-
+            'pelamar_name' => $this->pelamar->name,
+            'link' => url('/admin/manage-loker')
         ];
     }
 }

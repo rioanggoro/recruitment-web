@@ -40,10 +40,10 @@
                                 @endif
                             </td>
                             <td class="text-center">
+                                
                                 <a href="/admin/manage-loker" class="btn btn-sm btn-light border me-1">
                                     Lihat
                                 </a>
-
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
                                     data-bs-target="#deleteNotifModal{{ $notif->id }}">
