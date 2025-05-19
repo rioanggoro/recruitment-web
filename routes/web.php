@@ -34,7 +34,7 @@ Route::group(['middleware' => 'role:admin'], function () {
     Route::delete('/delete-devisi/{id}', [AdminController::class, 'destroy_devisi']);
 
     Route::get('/admin/manage-loker', [AdminController::class, 'index_manage_loker']);
-    Route::post('/add-loker', [AdminController::class,'add_loker']);
+    Route::post('/add-loker', [AdminController::class, 'add_loker']);
     Route::put('/edit-loker/{id}', [AdminController::class, 'update_loker']);
     Route::delete('/delete-loker/{id}', [AdminController::class, 'destroy_loker']);
 
@@ -42,13 +42,23 @@ Route::group(['middleware' => 'role:admin'], function () {
     Route::post('/update-status-lamaran/{id}', [AdminController::class, 'update_status_lamaran']);
     Route::get('/admin/detail-pelamar/{id}', [AdminController::class, 'detail_user']);
 
+    Route::get('/admin/notifikasi', function () {
+        return view('admin.notifikasi');
+    })->middleware(['auth'])->name('admin.notifikasi');
+
+    Route::post('/notifications/mark-read', function () {
+        auth()->user()->unreadNotifications->markAsRead();
+        return back();
+    })->name('notifications.markRead');
+
+
     Route::get('/admin/logout', [AuthController::class, 'logout']);
 });
 
 Route::group(['middleware' => 'role:pelamar'], function () {
     Route::get('/pelamar/dashboard', [PelamarController::class, 'dashboard']);
 
-    Route::get('/pelamar/profile', function(){
+    Route::get('/pelamar/profile', function () {
         return view('pelamar.profile');
     });
     Route::post('/update-avatar', [PelamarController::class, 'update_profile_picture']);

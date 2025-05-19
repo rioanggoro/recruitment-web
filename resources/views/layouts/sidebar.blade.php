@@ -22,6 +22,22 @@
                 </a>
             </li>
             <li class="sidebar-item">
+                @php
+                    $notifCount = auth()->user()->unreadNotifications->count();
+                @endphp
+
+                <a href="/admin/notifikasi" class='sidebar-link relative flex items-center gap-2'>
+                    <i class="bi bi-bell"></i>
+                    <span>Notifikasi</span>
+
+                    @if ($notifCount > 0)
+                        <span class="absolute top-1.5 right-3 w-2.5 h-2.5 bg-red-600 rounded-full animate-ping"></span>
+                        <span class="absolute top-1.5 right-3 w-2.5 h-2.5 bg-red-600 rounded-full"></span>
+                    @endif
+                </a>
+            </li>
+
+            <li class="sidebar-item">
                 <a href="/admin/logout" class='sidebar-link'>
                     <i class="bi bi-box-arrow-right"></i>
                     <span>Logout</span>
