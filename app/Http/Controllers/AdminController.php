@@ -8,6 +8,9 @@ use App\Models\Loker;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Notifications\LamaranDitolakNotification;
+use App\Notifications\LamaranDiterimaNotification;
+use App\Notifications\LamaranWawancaraNotification;
+
 
 
 class AdminController extends Controller
@@ -160,24 +163,36 @@ class AdminController extends Controller
     {
         $lamaran = Lamaran::find($id);
 
-        // Cek apakah lamaran ditemukan
         if (!$lamaran) {
             return redirect()->back()->with('error', 'Data lamaran tidak ditemukan.');
         }
 
-        // Simpan status baru
         $lamaran->status_lamaran = $request->status_lamaran;
         $lamaran->save();
 
-        // Jika status diubah menjadi "ditolak", kirim notifikasi ke pelamar
-        if ($request->status_lamaran === 'ditolak') {
-            $pelamar = $lamaran->user;
-            $loker = $lamaran->loker;
-            $pelamar->notify(new LamaranDitolakNotification($loker->title));
+        $pelamar = $lamaran->user;
+        $jobTitle = $lamaran->loker->title;
+
+        // Kirim notifikasi sesuai status
+        switch ($request->status_lamaran) {
+            case 'ditolak':
+                $pelamar->notify(new LamaranDitolakNotification($jobTitle));
+                break;
+
+            case 'diterima':
+                $pelamar->notify(new LamaranDiterimaNotification($jobTitle));
+                break;
+
+            case 'wawancara':
+                $pelamar->notify(new LamaranWawancaraNotification($jobTitle));
+                break;
+
+                // Jika tidak termasuk status di atas, tidak kirim notifikasi
         }
 
-        return redirect()->back()->with('success', 'Berhasil Mengubah Status Lamaran');
+        return redirect()->back()->with('success', 'Status lamaran berhasil diperbarui dan notifikasi dikirim.');
     }
+
 
 
     public function detail_user($id)

@@ -1,74 +1,71 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PelamarController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Notification;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PelamarController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-Route::get('/', function () {
-    return view('welcome');
-})->name('login');
-Route::get('/registrasi', function () {
-    return view('registrasi');
-});
+// =====================
+// AUTH
+// =====================
+Route::get('/', fn() => view('welcome'))->name('login');
+Route::get('/registrasi', fn() => view('registrasi'));
 Route::post('/registrasi', [AuthController::class, 'register'])->name('register');
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::group(['middleware' => 'role:admin'], function () {
+// =====================
+// ADMIN ROUTES
+// =====================
+Route::middleware('role:admin')->group(function () {
+    // Dashboard
     Route::get('/admin/dashboard', [AdminController::class, 'adminDashboard']);
 
+    // Devisi
     Route::get('/admin/manage-devisi', [AdminController::class, 'index_manage_devisi']);
     Route::post('/add-devisi', [AdminController::class, 'add_devisi']);
     Route::put('/edit-devisi/{id}', [AdminController::class, 'update_devisi']);
     Route::delete('/delete-devisi/{id}', [AdminController::class, 'destroy_devisi']);
 
+    // Loker
     Route::get('/admin/manage-loker', [AdminController::class, 'index_manage_loker']);
     Route::post('/add-loker', [AdminController::class, 'add_loker']);
     Route::put('/edit-loker/{id}', [AdminController::class, 'update_loker']);
     Route::delete('/delete-loker/{id}', [AdminController::class, 'destroy_loker']);
-
     Route::get('/admin/detail-loker/{id}', [AdminController::class, 'detail_loker']);
+
+    // Lamaran
     Route::post('/update-status-lamaran/{id}', [AdminController::class, 'update_status_lamaran']);
     Route::get('/admin/detail-pelamar/{id}', [AdminController::class, 'detail_user']);
 
-    Route::get('/admin/notifikasi', function () {
-        return view('admin.notifikasi');
-    })->middleware(['auth'])->name('admin.notifikasi');
-
+    // Notifikasi
+    Route::get('/admin/notifikasi', fn() => view('admin.notifikasi'))->middleware('auth')->name('admin.notifikasi');
     Route::post('/notifications/mark-read', function () {
         auth()->user()->unreadNotifications->markAsRead();
         return back();
     })->name('notifications.markRead');
-
     Route::delete('/notifications/{id}', function ($id) {
         $notification = auth()->user()->notifications()->findOrFail($id);
         $notification->delete();
-
         return back()->with('success', 'Notifikasi berhasil dihapus.');
     })->name('notifications.destroy');
+
+    // Logout
     Route::get('/admin/logout', [AuthController::class, 'logout']);
 });
 
-Route::group(['middleware' => 'role:pelamar'], function () {
+// =====================
+// PELAMAR ROUTES
+// =====================
+Route::middleware('role:pelamar')->group(function () {
+    // Dashboard
     Route::get('/pelamar/dashboard', [PelamarController::class, 'dashboard']);
 
-    Route::get('/pelamar/profile', function () {
-        return view('pelamar.profile');
-    });
+    // Profile
+    Route::get('/pelamar/profile', fn() => view('pelamar.profile'));
     Route::post('/update-avatar', [PelamarController::class, 'update_profile_picture']);
     Route::post('/update-biodata', [PelamarController::class, 'update_biodata']);
+
+    // Dokumen Upload/Delete
     Route::post('/upload-cv', [PelamarController::class, 'upload_cv']);
     Route::delete('/delete-cv', [PelamarController::class, 'delete_cv']);
     Route::post('/upload-ijazah', [PelamarController::class, 'upload_ijazah']);
@@ -84,11 +81,28 @@ Route::group(['middleware' => 'role:pelamar'], function () {
     Route::post('/upload-transkrip-nilai', [PelamarController::class, 'upload_transkrip_nilai']);
     Route::delete('/delete-transkrip-nilai', [PelamarController::class, 'delete_transkrip_nilai']);
 
+    // Loker dan Lamaran
     Route::get('/pelamar/loker', [PelamarController::class, 'loker']);
     Route::get('/pelamar/detail-loker/{id}', [PelamarController::class, 'detail_loker']);
     Route::post('/lamar-pekerjaan/{id}', [PelamarController::class, 'lamar']);
-
     Route::get('/pelamar/lamaran', [PelamarController::class, 'lamaran']);
 
+    Route::get('/pelamar/notifikasi', function () {
+        return view('pelamar.notifikasi');
+    })->middleware('auth')->name('pelamar.notifikasi');
+
+    Route::post('/pelamar/notifikasi/mark-read', function () {
+        auth()->user()->unreadNotifications->markAsRead();
+        return back();
+    })->name('pelamar.notifications.markRead');
+
+    Route::delete('/pelamar/notifikasi/{id}', function ($id) {
+        $notif = auth()->user()->notifications()->findOrFail($id);
+        $notif->delete();
+        return back()->with('success', 'Notifikasi berhasil dihapus.');
+    })->name('pelamar.notifications.destroy');
+
+
+    // Logout
     Route::get('/pelamar/logout', [AuthController::class, 'logout']);
 });

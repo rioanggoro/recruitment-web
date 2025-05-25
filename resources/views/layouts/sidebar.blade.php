@@ -73,6 +73,16 @@
                 </a>
             </li>
             <li class="sidebar-item">
+                <a href="/pelamar/notifikasi" class='sidebar-link position-relative'>
+                    <i class="bi bi-bell"></i>
+                    <span>Notifikasi</span>
+                    @if (auth()->user()->unreadNotifications->count() > 0)
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                    @endif
+                </a>
+            </li>
+            <li class="sidebar-item">
                 <a href="/pelamar/logout" class='sidebar-link'>
                     <i class="bi bi-box-arrow-right"></i>
                     <span>Logout</span>
