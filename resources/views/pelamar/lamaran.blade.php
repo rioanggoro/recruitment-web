@@ -32,6 +32,7 @@
                                     <th style="width: 10%;">Devisi</th>
                                     <th style="width: 20%;">Status Lamaran</th>
                                     <th style="width: 35%;">Keterangan</th>
+                                    <th style="width: 20%;">Link Wawancara</th>
                                     <th class="text-center" style="width: 15%;">#</th>
                                 </tr>
                             </thead>
@@ -63,15 +64,24 @@
                                                 Mohon maaf, lamaran Anda tidak lolos.
                                             @endif
                                         </td>
+                                        <td>
+                                            @if ($item->status_lamaran == 'wawancara' && $item->link_wawancara)
+                                                <a href="{{ $item->link_wawancara }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-info">
+                                                    Join Wawancara
+                                                </a>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
                                         <td class="text-center">
                                             <a href="/pelamar/detail-loker/{{ $item->loker_id }}"
-                                                class="btn btn-sm btn-outline-primary">
-                                                Lihat Detail
-                                            </a>
+                                                class="btn btn-sm btn-outline-primary">Lihat Detail</a>
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
+
                         </table>
                         @if ($lamaran->isEmpty())
                             <div class="text-center text-muted py-4">Belum ada lamaran yang dikirim.</div>
