@@ -85,9 +85,9 @@
                                                             <div class="mb-3">
                                                                 <label for="statusLamaran{{ $item->id }}"
                                                                     class="form-label">Status Lamaran</label>
-                                                                <select class="form-select"
-                                                                    id="statusLamaran{{ $item->id }}"
-                                                                    name="status_lamaran" required>
+                                                                <select class="form-select status-select"
+                                                                    name="status_lamaran" data-id="{{ $item->id }}"
+                                                                    required>
                                                                     <option value="" disabled selected>Pilih Status
                                                                     </option>
                                                                     <option value="ditolak">Tolak</option>
@@ -96,13 +96,27 @@
                                                                     <option value="diterima">Terima Lamaran</option>
                                                                 </select>
                                                             </div>
+
+                                                            <div class="mb-3 link-wawancara-field d-none"
+                                                                id="linkWawancaraField{{ $item->id }}">
+                                                                <label for="link_wawancara{{ $item->id }}"
+                                                                    class="form-label">Link Wawancara (Google Meet, Zoom,
+                                                                    dll)</label>
+                                                                <input type="url" class="form-control"
+                                                                    name="link_wawancara"
+                                                                    id="link_wawancara{{ $item->id }}"
+                                                                    placeholder="https://meet.google.com/xxxx-xxxx-xxx">
+                                                            </div>
+
                                                         </div>
+
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary"
                                                                 data-bs-dismiss="modal">Batal</button>
                                                             <button type="submit" class="btn btn-primary">Simpan</button>
                                                         </div>
                                                     </form>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -128,6 +142,7 @@
                                         <th>Nama Pelamar</th>
                                         <th>Gender</th>
                                         <th>Pendidikan Terakhir</th>
+                                        <th>Link Wawancara</th>
                                         <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -137,6 +152,7 @@
                                             <td>{{ $item->user->name }}</td>
                                             <td>{{ $item->user->biodata->jenis_kelamin }}</td>
                                             <td>{{ $item->user->biodata->pendidikan_terakhir }}</td>
+                                            <td>{{ $item->link_wawancara }}</td>
                                             <td class="text-center">
                                                 <a href="/admin/detail-pelamar/{{ $item->user->id }}"
                                                     class="btn btn-primary btn-sm me-2">Detail Profile</a>
@@ -269,48 +285,50 @@
 @endsection
 
 @push('scripts')
+    {{-- Tooltip Bootstrap --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            });
+            // Semua select status
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    const selectedStatus = this.value;
+                    const lamaranId = this.getAttribute('data-id');
+                    const linkField = document.getElementById('linkWawancaraField' + lamaranId);
 
-            // Modal Actions
-            // Replace with actual modal IDs and functionality
-            // Example:
-            var modalIds = ['#editStatusModal1', '#editStatusModal2', '#editStatusModal3', '#editStatusModal4'];
-            modalIds.forEach(function(id) {
-                $(id).on('show.bs.modal', function(event) {
-                    var button = $(event.relatedTarget);
-                    // Extract info from data-bs-* attributes
-                    var recipient = button.data('whatever');
-                    var modal = $(this);
-                    modal.find('.modal-title').text('New message to ' + recipient);
-                    modal.find('.modal-body input').val(recipient);
-                })
+                    if (selectedStatus === 'wawancara') {
+                        linkField.classList.remove('d-none');
+                    } else {
+                        linkField.classList.add('d-none');
+                    }
+                });
             });
         });
     </script>
 
+
+    {{-- SweetAlert2 untuk flash message --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Sukses!',
-                text: '{{ session('success') }}',
-                showCloseButton: true,
-                showConfirmButton: false,
-            });
-        @elseif (session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: '{{ session('error') }}',
-                showCloseButton: true,
-                showConfirmButton: false,
-            });
-        @endif
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (session('success'))
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            @elseif (session('error'))
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: '{{ session('error') }}',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            @endif
+        });
     </script>
 @endpush

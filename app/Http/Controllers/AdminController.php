@@ -161,6 +161,12 @@ class AdminController extends Controller
 
     public function update_status_lamaran(Request $request, $id)
     {
+        // Validasi request
+        $request->validate([
+            'status_lamaran' => 'required|in:ditolak,diterima,wawancara,seleksi',
+            'link_wawancara' => 'nullable|url',
+        ]);
+
         $lamaran = Lamaran::find($id);
 
         if (!$lamaran) {
@@ -168,8 +174,17 @@ class AdminController extends Controller
         }
 
         $lamaran->status_lamaran = $request->status_lamaran;
+
+        // Simpan link wawancara jika statusnya "wawancara"
+        if ($request->status_lamaran === 'wawancara') {
+            $lamaran->link_wawancara = $request->link_wawancara;
+        } else {
+            $lamaran->link_wawancara = null; // Kosongkan jika bukan wawancara
+        }
+
         $lamaran->save();
 
+        // Ambil pelamar dan judul pekerjaan
         $pelamar = $lamaran->user;
         $jobTitle = $lamaran->loker->title;
 
@@ -186,11 +201,9 @@ class AdminController extends Controller
             case 'wawancara':
                 $pelamar->notify(new LamaranWawancaraNotification($jobTitle));
                 break;
-
-                // Jika tidak termasuk status di atas, tidak kirim notifikasi
         }
 
-        return redirect()->back()->with('success', 'Status lamaran berhasil diperbarui dan notifikasi dikirim.');
+        return redirect()->back()->with('success', 'Status lamaran berhasil diperbarui.');
     }
 
 

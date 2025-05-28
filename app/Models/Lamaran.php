@@ -15,6 +15,7 @@ class Lamaran extends Model
         'status_lamaran',
         'user_id',
         'loker_id',
+        'link_wawancara',
     ];
 
     // Relationship with user table
