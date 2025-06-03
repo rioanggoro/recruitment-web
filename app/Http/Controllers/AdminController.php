@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use App\Notifications\LamaranDitolakNotification;
 use App\Notifications\LamaranDiterimaNotification;
 use App\Notifications\LamaranWawancaraNotification;
+use Illuminate\Support\Facades\Log;
+
 
 
 
@@ -159,6 +161,7 @@ class AdminController extends Controller
         return view('admin.detail-loker', ['loker' => $loker, 'lamaran_seleksi' => $lamaran_seleksi, 'lamaran_wawancara' => $lamaran_wawancara, 'lamaran_diterima' => $lamaran_diterima, 'lamaran_ditolak' => $lamaran_ditolak]);
     }
 
+
     public function update_status_lamaran(Request $request, $id)
     {
         // Validasi request
@@ -166,45 +169,56 @@ class AdminController extends Controller
             'status_lamaran' => 'required|in:ditolak,diterima,wawancara,seleksi',
             'link_wawancara' => 'nullable|url',
         ]);
-
+    
         $lamaran = Lamaran::find($id);
-
+    
         if (!$lamaran) {
             return redirect()->back()->with('error', 'Data lamaran tidak ditemukan.');
         }
-
+    
         $lamaran->status_lamaran = $request->status_lamaran;
-
+    
         // Simpan link wawancara jika statusnya "wawancara"
         if ($request->status_lamaran === 'wawancara') {
             $lamaran->link_wawancara = $request->link_wawancara;
         } else {
-            $lamaran->link_wawancara = null; // Kosongkan jika bukan wawancara
+            $lamaran->link_wawancara = null;
         }
-
+    
         $lamaran->save();
-
+    
         // Ambil pelamar dan judul pekerjaan
         $pelamar = $lamaran->user;
         $jobTitle = $lamaran->loker->title;
-
-        // Kirim notifikasi sesuai status
-        switch ($request->status_lamaran) {
-            case 'ditolak':
-                $pelamar->notify(new LamaranDitolakNotification($jobTitle));
-                break;
-
-            case 'diterima':
-                $pelamar->notify(new LamaranDiterimaNotification($jobTitle));
-                break;
-
-            case 'wawancara':
-                $pelamar->notify(new LamaranWawancaraNotification($jobTitle));
-                break;
+    
+        // Logging sebelum notifikasi
+        Log::info("Akan mengirim notifikasi status '{$request->status_lamaran}' ke: {$pelamar->email}");
+    
+        try {
+            switch ($request->status_lamaran) {
+                case 'ditolak':
+                    $pelamar->notify(new \App\Notifications\LamaranDitolakNotification($jobTitle));
+                    break;
+    
+                case 'diterima':
+                    $pelamar->notify(new \App\Notifications\LamaranDiterimaNotification($jobTitle));
+                    break;
+    
+                case 'wawancara':
+                    $pelamar->notify(new \App\Notifications\LamaranWawancaraNotification($jobTitle));
+                    break;
+            }
+    
+            // Logging sukses
+            Log::info("Berhasil kirim notifikasi status '{$request->status_lamaran}' ke user ID: {$pelamar->id}");
+        } catch (\Exception $e) {
+            // Logging error
+            Log::error("Gagal kirim notifikasi ke {$pelamar->email}. Error: " . $e->getMessage());
         }
-
+    
         return redirect()->back()->with('success', 'Status lamaran berhasil diperbarui.');
     }
+
 
 
 

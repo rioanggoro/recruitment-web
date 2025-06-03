@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class LamaranDiterimaNotification extends Notification
 {
@@ -18,14 +19,26 @@ class LamaranDiterimaNotification extends Notification
 
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'mail'];
     }
 
     public function toDatabase($notifiable)
     {
         return [
-            'message' => 'Selamat! Lamaran Anda untuk posisi ' . $this->jobTitle . ' telah diterima.',
-            'link' => url('/pelamar/lamaran')
+            'message' => 'Selamat! Anda diterima untuk posisi ' . $this->jobTitle . '.',
+            'link' => url('/pelamar/lamaran'),
         ];
+    }
+
+    public function toMail($notifiable)
+    {
+        return (new MailMessage)
+            ->subject('Lamaran Anda Diterima')
+            ->greeting('Halo ' . $notifiable->name . ',')
+            ->line('Selamat! Lamaran Anda untuk posisi ' . $this->jobTitle . ' telah diterima.')
+            ->line('Kami akan segera menghubungi Anda untuk proses selanjutnya.')
+            ->action('Lihat Status Lamaran', url('/pelamar/lamaran'))
+            ->line('Hormat kami,')
+            ->line('HR Anugerah Inovasi Sejahtera');
     }
 }
