@@ -28,10 +28,14 @@
             <div class="sidebar-wrapper active">
                 <div class="sidebar-header position-relative">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="logo">
-                            <a href="index.html"><img
-                                    src="{{ asset('assets/Images/3cee983f1407f2ab18b788e45732bf40.webp') }}"
-                                    alt="Logo" style="width: 120px;height: auto;" srcset=""></a>
+                        <div class="logo text-center my-4">
+                            <a href="{{ url('/') }}">
+                                <img src="{{ asset('assets/compiled/png/logo.png') }}" alt="Logo"
+                                    style="width: 80px; height: auto;">
+                            </a>
+                            <div class="mt-2 text-white fw-bold" style="font-size: 14px; font-weight: 500;">
+                                PT. ANUGERAH INOVASI <br> SEJAHTERA
+                            </div>
                         </div>
                         {{-- <div class="theme-toggle d-flex gap-2  align-items-center mt-2">
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"

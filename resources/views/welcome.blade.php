@@ -20,9 +20,13 @@
             <div class="col-lg-5 col-12" style="overflow-y: auto;">
                 <div id="auth-left" class="d-flex flex-column justify-content-center h-100">
                     <div class="auth-logo mb-4">
-                        <a href="index.html"><img
-                                src="{{ asset('assets/Images/3cee983f1407f2ab18b788e45732bf40.webp') }}"
-                                style="width: 200px; height: auto;" alt="Logo"></a>
+                        <a href="{{ url('/') }}">
+                            <img src="{{ asset('assets/compiled/png/logo.png') }}" alt="Logo"
+                                style="width: 80px; height: auto;">
+                        </a>
+                        <div class="mt-2 text-white fw-bold" style="font-size: 14px; font-weight: 500;">
+                            PT. ANUGERAH INOVASI <br> SEJAHTERA
+                        </div>
                     </div>
                     <h1 class="auth-title">Log in.</h1>
                     <p class="auth-subtitle mb-5">Silahkan Login Menggunakan Akun Anda</p>
