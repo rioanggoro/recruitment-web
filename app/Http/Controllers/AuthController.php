@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\UserTest;
 
 class AuthController extends Controller
 {
@@ -14,9 +13,9 @@ class AuthController extends Controller
     {
         // Validasi input form
         $request->validate([
-            'name' => 'required|string|max:255', // ✅ Tambahkan validasi string dan max
-            'username' => 'required|string|unique:users|min:5|max:255', // ✅ Tambahkan validasi string dan max
-            'password' => 'required|string|confirmed|min:8', // ✅ Tambahkan validasi string
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|unique:users|min:5|max:255',
+            'password' => 'required|string|confirmed|min:8',
         ]);
 
         $user = new User();
@@ -27,10 +26,11 @@ class AuthController extends Controller
 
         if ($user->save()) {
             // ✅ Langsung login user setelah registrasi berhasil
-            Auth::login($user); 
+            Auth::login($user);
 
-            // 💡 Arahkan user ke halaman pemilihan tes setelah registrasi
-            return redirect()->route('pelamar.test.selection')->with('success', 'Registrasi berhasil! Silakan mulai tes Anda.');
+            // 💡 REDIRECT KE DASHBOARD PELAMAR SETELAH REGISTRASI
+            // Pengecekan tes akan dilakukan saat user mencoba mengakses halaman loker
+            return redirect('/pelamar/dashboard')->with('success', 'Registrasi berhasil! Silakan lengkapi profil Anda.');
         } else {
             return redirect()->back()->with('error', 'Registrasi Gagal. Silakan coba lagi.');
         }
@@ -40,8 +40,8 @@ class AuthController extends Controller
     {
         // Validasi input form
         $request->validate([
-            'username' => 'required|string', // ✅ Tambahkan validasi string
-            'password' => 'required|string', // ✅ Tambahkan validasi string
+            'username' => 'required|string',
+            'password' => 'required|string',
         ]);
 
         // Proses autentikasi menggunakan Auth
@@ -54,37 +54,30 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
-            // 💡 Cek role user
+            // ✅ Cek role user dan arahkan ke dashboard masing-masing
             if ($user->role == 'admin') {
                 return redirect('/admin/dashboard')->with('success', 'Selamat datang kembali, Admin!');
-            } elseif (Auth::user()->role == 'pelamar') {
-                // ✅ Cek apakah pelamar sudah mengambil tes
-                $hasTakenAnyTest = UserTest::where('user_id', $user->id)
-                                          ->whereNotNull('completed_at') // 💡 Pastikan tes sudah diselesaikan
-                                          ->exists();
-
-                if (!$hasTakenAnyTest) {
-                    // Jika belum mengambil tes, arahkan ke halaman pemilihan tes
-                    return redirect()->route('pelamar.test.selection')->with('info', 'Anda perlu menyelesaikan tes terlebih dahulu.');
-                }
-                // Jika sudah mengambil tes, arahkan ke dashboard pelamar
+            } elseif ($user->role == 'pelamar') {
+                // 💡 REDIRECT KE DASHBOARD PELAMAR SETELAH LOGIN
+                // Pengecekan tes dipindahkan ke PelamarController@loker
                 return redirect('/pelamar/dashboard')->with('success', 'Login berhasil!');
             }
         }
 
+        // 🚫 Hapus baris return redirect() yang duplikat ini
         // Jika autentikasi gagal atau user tidak memiliki role yang sesuai
-        return redirect()->back()->withInput($request->only('username'))->with('error', 'Username atau password salah.'); // ✅ Lebih baik simpan input username
-    
-
-
-        // Jika autentikasi gagal atau user tidak memiliki role yang sesuai
-        return redirect()->back()->with('error', 'Username atau password salah.');
+        return redirect()->back()->withInput($request->only('username'))->with('error', 'Username atau password salah.');
     }
 
-    public function logout()
+    public function logout(Request $request) // ✅ Tambahkan parameter Request
     {
         Auth::logout();
 
-        return view('welcome');
+        // ✅ Invalidate sesi dan regenerate token untuk keamanan
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // ✅ Redirect ke halaman login atau halaman utama
+        return redirect('/')->with('success', 'Anda telah berhasil logout.');
     }
 }

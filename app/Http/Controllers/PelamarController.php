@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Notifications\LamaranMasukNotification;
+use App\Models\UserTest;
 
 class PelamarController extends Controller
 {
@@ -453,9 +454,22 @@ class PelamarController extends Controller
 
     public function loker()
     {
-        $loker = Loker::all();
+        $user = auth()->user();
 
-        return view('pelamar.loker', ['loker' => $loker]);
+        // 💡 Cek apakah user sudah menyelesaikan tes
+        $hasCompletedTest = UserTest::where('user_id', $user->id)
+                                    ->whereNotNull('completed_at')
+                                    ->exists();
+
+        // Jika user belum menyelesaikan tes, redirect ke halaman pemilihan tes
+        if (!$hasCompletedTest) {
+            return redirect()->route('pelamar.test.selection')->with('info', 'Anda harus menyelesaikan tes terlebih dahulu sebelum melihat lowongan pekerjaan.');
+        }
+
+        // ✅ TAMBAHKAN BARIS INI: Ambil data loker hanya jika user sudah menyelesaikan tes
+        $loker = Loker::all(); // Sesuaikan query jika kamu punya filter atau relasi lain yang ingin di-load
+
+        return view('pelamar.loker', compact('loker'));
     }
 
     public function detail_loker($id)

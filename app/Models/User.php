@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Devisi;
 
 use App\Models\UserTest; // 💡 TAMBAHKAN INI: Import model UserTest
 
@@ -64,4 +65,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserTest::class);
     }
+    public function recommendedDevisi() // 💡 TAMBAHKAN FUNGSI INI
+    {
+        return $this->belongsTo(Devisi::class, 'recommended_devisi_id');
+    }
+
 }

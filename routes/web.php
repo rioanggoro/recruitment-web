@@ -106,7 +106,7 @@ Route::middleware('role:pelamar')->group(function () {
     Route::delete('/delete-transkrip-nilai', [PelamarController::class, 'delete_transkrip_nilai']);
 
     // Loker dan Lamaran
-    Route::get('/pelamar/loker', [PelamarController::class, 'loker']);
+    Route::get('/pelamar/loker', [PelamarController::class, 'loker'])->name('pelamar.loker');
     Route::get('/pelamar/detail-loker/{id}', [PelamarController::class, 'detail_loker']);
     Route::post('/lamar-pekerjaan/{id}', [PelamarController::class, 'lamar']);
     Route::get('/pelamar/lamaran', [PelamarController::class, 'lamaran']);

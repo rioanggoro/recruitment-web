@@ -6,10 +6,8 @@
     </div>
     <div class="page-content">
         <section class="row">
-            <!-- Statistik Utama -->
             <div class="col-12">
                 <div class="row">
-                    <!-- Jumlah User -->
                     <div class="col-6 col-lg-3 col-md-6">
                         <div class="card">
                             <div class="card-body px-4 py-4-5">
@@ -27,7 +25,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Jumlah Lowongan Pekerjaan -->
                     <div class="col-6 col-lg-3 col-md-6">
                         <div class="card">
                             <div class="card-body px-4 py-4-5">
@@ -45,7 +42,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Jumlah Divisi -->
                     <div class="col-6 col-lg-3 col-md-6">
                         <div class="card">
                             <div class="card-body px-4 py-4-5">
@@ -63,7 +59,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Jumlah Lamaran -->
                     <div class="col-6 col-lg-3 col-md-6">
                         <div class="card">
                             <div class="card-body px-4 py-4-5">
@@ -84,7 +79,55 @@
                 </div>
             </div>
 
-            <!-- Tabel Data Lowongan Pekerjaan -->
+            {{-- 💡 TAMBAHKAN BAGIAN INI UNTUK HASIL TES & REKOMENDASI DIVISI --}}
+            <div class="col-12">
+                @php
+                    $user = Auth::user();
+                    // Load relasi userTests dan recommendedDevisi untuk user saat ini
+                    $user->load(['userTests', 'recommendedDevisi']);
+                    $userTest = $user->userTests->whereNotNull('completed_at')->first(); // Ambil tes yang sudah diselesaikan
+                @endphp
+
+                @if ($userTest && $userTest->completed_at) {{-- Cek apakah user sudah menyelesaikan tes --}}
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Hasil Tes & Rekomendasi Divisi</h6>
+                        </div>
+                        <div class="card-body">
+                            <p>Skor Tes Anda: <strong>{{ $userTest->score ?? 'N/A' }}</strong></p>
+                            <p>Status Kelulusan:
+                                @if ($userTest->passed !== null)
+                                    @if ($userTest->passed)
+                                        <span class="badge bg-success">Lulus</span>
+                                    @else
+                                        <span class="badge bg-danger">Tidak Lulus</span>
+                                    @endif
+                                @else
+                                    <span class="badge bg-secondary">Belum Dinilai</span>
+                                @endif
+                            </p>
+
+                            @if ($user->recommendedDevisi)
+                                {{-- Periksa jika recommendedDevisi ada --}}
+                                <p>Berdasarkan skor tes Anda, kami merekomendasikan Anda untuk bergabung dengan divisi:</p>
+                                <h4 class="text-primary">{{ $user->recommendedDevisi->nama_devisi }}</h4>
+                            @else
+                                <p>Berdasarkan skor tes Anda, belum ada divisi yang secara spesifik direkomendasikan saat
+                                    ini. Anda dapat melihat lowongan pekerjaan yang tersedia.</p>
+                            @endif
+                            <hr>
+                            <a href="{{ route('pelamar.loker') }}" class="btn btn-info">Lihat Lowongan Pekerjaan</a>
+                        </div>
+                    </div>
+                @else
+                    <div class="alert alert-info">
+                        Anda belum menyelesaikan tes. Silakan selesaikan tes untuk mendapatkan rekomendasi divisi.
+                        <a href="{{ route('pelamar.test.selection') }}" class="alert-link">Mulai Tes Sekarang</a>
+                    </div>
+                @endif
+            </div>
+            {{-- AKHIR BAGIAN REKOMENDASI --}}
+
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
