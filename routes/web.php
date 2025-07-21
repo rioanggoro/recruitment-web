@@ -50,6 +50,12 @@ Route::middleware('role:admin')->group(function () {
         return back()->with('success', 'Notifikasi berhasil dihapus.');
     })->name('notifications.destroy');
 
+    // =====================
+    // MANAGE USER TEST RESULTS (Admin)
+    // =====================
+    Route::get('/admin/user-tests', [TestController::class, 'listUserTests'])->name('admin.user_tests.index');
+    Route::get('/admin/user-tests/{userTest}', [TestController::class, 'showUserTestResult'])->name('admin.user_tests.show');
+
     // 💡 TAMBAHKAN INI: Routes untuk mengelola soal tes (CRUD soal) oleh Admin
     Route::prefix('admin/manage-tests')->group(function () {
         Route::get('/', [TestController::class, 'index'])->name('admin.tests.index');

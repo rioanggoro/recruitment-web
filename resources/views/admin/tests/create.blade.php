@@ -38,7 +38,7 @@
                             <option value="">Pilih Divisi</option>
                             @foreach ($devisis as $devisi)
                                 <option value="{{ $devisi->id }}" {{ old('devisi_id') == $devisi->id ? 'selected' : '' }}>
-                                    {{ $devisi->name }} {{-- 💡 Pastikan model Devisi punya atribut 'name' --}}
+                                    {{ $devisi->nama_devisi }} {{-- ✅ JADI SEPERTI INI --}}
                                 </option>
                             @endforeach
                         </select>

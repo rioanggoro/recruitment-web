@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Test;
 use App\Models\Question;
 use App\Models\Option;
-use App\Models\UserTest;
-use App\Models\UserAnswer;
-use App\Models\Devisi; // 💡 Pastikan kamu punya model Devisi
+use App\Models\UserTest; 
+use App\Models\UserAnswer; 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class TestController extends Controller
 {
-    // ======================================
-    // ADMIN FUNCTIONS (CRUD Tests & Questions)
-    // ======================================
 
     public function index()
     {
@@ -257,5 +255,24 @@ class TestController extends Controller
         // 💡 Redirect atau berikan notifikasi hasil tes
         // Misalnya, langsung tentukan divisi atau arahkan ke halaman hasil
         return redirect()->route('pelamar.dashboard')->with('success', 'Tes berhasil diselesaikan! Skor Anda: ' . $score);
+    }
+
+    public function listUserTests(){
+        $userTests = UserTest::with(['user', 'test'])
+                             ->orderBy('created_at', 'desc')
+                             ->get();
+
+        return view('admin.user_tests.index', compact('userTests'));
+    }
+    public function showUserTestResult(UserTest $userTest)
+    {
+
+        $userTest->load([
+            'user',
+            'test',
+            'userAnswers.question.options', // Load userAnswers, lalu question, lalu options dari question
+        ]);
+
+        return view('admin.user_tests.show', compact('userTest'));
     }
 }

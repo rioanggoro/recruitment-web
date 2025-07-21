@@ -21,11 +21,17 @@
                     <span>Manage Loker</span>
                 </a>
             </li>
-            {{-- 💡 TAMBAHKAN INI UNTUK ADMIN: Manage Tes --}}
             <li class="sidebar-item">
                 <a href="{{ route('admin.tests.index') }}" class='sidebar-link'>
-                    <i class="bi bi-file-earmark-text"></i> {{-- Icon yang relevan --}}
+                    <i class="bi bi-file-earmark-text"></i>
                     <span>Manage Tes</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a href="{{ route('admin.user_tests.index') }}" class='sidebar-link'>
+                    <i class="bi bi-bar-chart-line"></i> {{-- Icon yang relevan --}}
+                    <span>Hasil Tes Pelamar</span>
                 </a>
             </li>
             {{-- AKHIR TAMBAHAN ADMIN --}}
