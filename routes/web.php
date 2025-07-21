@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PelamarController;
+use App\Http\Controllers\TestController; // 💡 TAMBAHKAN INI: Import TestController
 
 // =====================
 // AUTH
@@ -48,6 +49,22 @@ Route::middleware('role:admin')->group(function () {
         $notification->delete();
         return back()->with('success', 'Notifikasi berhasil dihapus.');
     })->name('notifications.destroy');
+
+    // 💡 TAMBAHKAN INI: Routes untuk mengelola soal tes (CRUD soal) oleh Admin
+    Route::prefix('admin/manage-tests')->group(function () {
+        Route::get('/', [TestController::class, 'index'])->name('admin.tests.index');
+        Route::get('/create', [TestController::class, 'create'])->name('admin.tests.create');
+        Route::post('/', [TestController::class, 'store'])->name('admin.tests.store');
+        Route::get('/{test}/edit', [TestController::class, 'edit'])->name('admin.tests.edit');
+        Route::put('/{test}', [TestController::class, 'update'])->name('admin.tests.update');
+        Route::delete('/{test}', [TestController::class, 'destroy'])->name('admin.tests.destroy');
+        // Tambahan: Mengelola pertanyaan per tes
+        Route::get('/{test}/questions', [TestController::class, 'showQuestions'])->name('admin.tests.questions.index');
+        Route::post('/{test}/questions', [TestController::class, 'storeQuestion'])->name('admin.tests.questions.store');
+        Route::get('/questions/{question}/edit', [TestController::class, 'editQuestion'])->name('admin.tests.questions.edit');
+        Route::put('/questions/{question}', [TestController::class, 'updateQuestion'])->name('admin.tests.questions.update');
+        Route::delete('/questions/{question}', [TestController::class, 'destroyQuestion'])->name('admin.tests.questions.destroy');
+    });
 
     // Logout
     Route::get('/admin/logout', [AuthController::class, 'logout']);
@@ -102,6 +119,11 @@ Route::middleware('role:pelamar')->group(function () {
         return back()->with('success', 'Notifikasi berhasil dihapus.');
     })->name('pelamar.notifications.destroy');
 
+    // 💡 TAMBAHKAN INI: Routes untuk Tes (Pelamar)
+    // Arahkan user ke halaman tes setelah registrasi/login jika belum tes
+    Route::get('/pelamar/tes', [TestController::class, 'showTestSelection'])->name('pelamar.test.selection'); // Pilih divisi
+    Route::get('/pelamar/tes/{test}', [TestController::class, 'startTest'])->name('pelamar.test.start'); // Mulai tes
+    Route::post('/pelamar/tes/{test}/submit', [TestController::class, 'submitTest'])->name('pelamar.test.submit'); // Submit jawaban
 
     // Logout
     Route::get('/pelamar/logout', [AuthController::class, 'logout']);
