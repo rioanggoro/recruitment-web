@@ -21,6 +21,14 @@
                     <span>Manage Loker</span>
                 </a>
             </li>
+            {{-- 💡 TAMBAHKAN INI UNTUK ADMIN: Manage Tes --}}
+            <li class="sidebar-item">
+                <a href="{{ route('admin.tests.index') }}" class='sidebar-link'>
+                    <i class="bi bi-file-earmark-text"></i> {{-- Icon yang relevan --}}
+                    <span>Manage Tes</span>
+                </a>
+            </li>
+            {{-- AKHIR TAMBAHAN ADMIN --}}
             <li class="sidebar-item">
                 @php
                     $notifCount = auth()->user()->unreadNotifications->count();
@@ -66,6 +74,14 @@
                     <span>Lamaran Anda</span>
                 </a>
             </li>
+            {{-- 💡 TAMBAHKAN INI UNTUK PELAMAR: Tes Online --}}
+            <li class="sidebar-item">
+                <a href="{{ route('pelamar.test.selection') }}" class='sidebar-link'>
+                    <i class="bi bi-pencil-square"></i> {{-- Icon yang relevan --}}
+                    <span>Tes Online</span>
+                </a>
+            </li>
+            {{-- AKHIR TAMBAHAN PELAMAR --}}
             <li class="sidebar-item">
                 <a href="/pelamar/profile" class='sidebar-link'>
                     <i class="bi bi-person"></i>

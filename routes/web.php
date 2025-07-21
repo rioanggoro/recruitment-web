@@ -19,16 +19,16 @@ Route::post('/login', [AuthController::class, 'login']);
 // =====================
 Route::middleware('role:admin')->group(function () {
     // Dashboard
-    Route::get('/admin/dashboard', [AdminController::class, 'adminDashboard']);
+    Route::get('/admin/dashboard', [AdminController::class, 'adminDashboard'])->name('admin.dashboard');
 
     // Devisi
-    Route::get('/admin/manage-devisi', [AdminController::class, 'index_manage_devisi']);
+    Route::get('/admin/manage-devisi', [AdminController::class, 'index_manage_devisi'])->name('admin.manage-devisi');
     Route::post('/add-devisi', [AdminController::class, 'add_devisi']);
     Route::put('/edit-devisi/{id}', [AdminController::class, 'update_devisi']);
     Route::delete('/delete-devisi/{id}', [AdminController::class, 'destroy_devisi']);
 
     // Loker
-    Route::get('/admin/manage-loker', [AdminController::class, 'index_manage_loker']);
+    Route::get('/admin/manage-loker', [AdminController::class, 'index_manage_loker'])->name('admin.manage-loker');
     Route::post('/add-loker', [AdminController::class, 'add_loker']);
     Route::put('/edit-loker/{id}', [AdminController::class, 'update_loker']);
     Route::delete('/delete-loker/{id}', [AdminController::class, 'destroy_loker']);
@@ -75,7 +75,8 @@ Route::middleware('role:admin')->group(function () {
 // =====================
 Route::middleware('role:pelamar')->group(function () {
     // Dashboard
-    Route::get('/pelamar/dashboard', [PelamarController::class, 'dashboard']);
+    Route::get('/pelamar/dashboard', [PelamarController::class, 'dashboard'])->name('pelamar.dashboard');
+
 
     // Profile
     Route::get('/pelamar/profile', fn() => view('pelamar.profile'));

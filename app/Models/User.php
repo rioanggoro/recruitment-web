@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+use App\Models\UserTest; // 💡 TAMBAHKAN INI: Import model UserTest
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -21,6 +23,7 @@ class User extends Authenticatable
         'name',
         'username',
         'password',
+        'role',
     ];
 
     /**
@@ -47,8 +50,18 @@ class User extends Authenticatable
     {
         return $this->hasOne(Biodata::class);
     }
+
     public function routeNotificationForMail()
     {
         return $this->biodata->email ?? null;
+    }
+
+    /**
+     * Get the user tests associated with the user.
+     * 💡 TAMBAHKAN FUNGSI INI: Relasi ke UserTest
+     */
+    public function userTests()
+    {
+        return $this->hasMany(UserTest::class);
     }
 }
