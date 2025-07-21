@@ -1,6 +1,4 @@
-{{-- resources/views/admin/tests/questions/edit.blade.php --}}
-
-@extends('layouts.admin') {{-- 💡 Pastikan ini sesuai dengan layout adminmu --}}
+@extends('layouts.master')
 
 @section('title', 'Edit Soal Tes: ' . $question->question_text)
 

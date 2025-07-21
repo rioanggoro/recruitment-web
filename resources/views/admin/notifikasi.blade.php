@@ -4,7 +4,9 @@
 
 @section('content')
     <div class="container mx-auto px-4 py-6">
-        <h1 class="text-2xl font-semibold text-white mb-6">Notifikasi Lamaran Masuk</h1>
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Notifikasi Masuk</h1>
+        </div>
 
         @if (auth()->user()->unreadNotifications->count() > 0)
             <form method="POST" action="{{ route('notifications.markRead') }}" class="mb-4">
@@ -15,7 +17,7 @@
             </form>
         @endif
 
-        <div class="table-responsive bg-dark p-3 rounded shadow">
+        <div class="table-responsive p-3 rounded shadow">
             <table class="table table-dark table-bordered table-striped table-hover text-sm align-middle mb-0">
                 <thead class="table-secondary text-dark">
                     <tr>
@@ -40,7 +42,7 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                
+
                                 <a href="/admin/manage-loker" class="btn btn-sm btn-light border me-1">
                                     Lihat
                                 </a>
