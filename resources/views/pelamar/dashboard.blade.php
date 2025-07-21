@@ -117,45 +117,6 @@
                 </div>
             </div>
 
-            <!-- Tabel Data User -->
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Recent Users</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Registered At</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($users as $index => $user)
-                                        <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            <td>{{ $user->name }}</td>
-                                            <td>
-                                                @if ($user->biodata == null || $user->biodata->email == null)
-                                                    -
-                                                @else
-                                                    {{ $user->biodata->email }}
-                                                @endif
-                                            </td>
-                                            <td>{{ $user->created_at->format('d-m-Y') }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </section>
     </div>
 @endsection
