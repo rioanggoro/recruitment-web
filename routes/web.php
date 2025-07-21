@@ -4,10 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PelamarController;
-use App\Http\Controllers\TestController; // 💡 TAMBAHKAN INI: Import TestController
+use App\Http\Controllers\TestController;
 
 // =====================
-// AUTH
+// AUTH ROUTES
 // =====================
 Route::get('/', fn() => view('welcome'))->name('login');
 Route::get('/registrasi', fn() => view('registrasi'));

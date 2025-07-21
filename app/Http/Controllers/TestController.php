@@ -203,65 +203,52 @@ class TestController extends Controller
 
     public function submitTest(Request $request, Test $test)
     {
-        // Mendapatkan user yang sedang login
         $user = auth()->user();
 
-        // Mencari sesi tes user yang aktif dan belum selesai untuk tes ini
-        // Jika tidak ditemukan, akan otomatis mengembalikan 404
         $userTest = UserTest::where('user_id', $user->id)
                             ->where('test_id', $test->id)
-                            ->whereNull('completed_at') // Memastikan tes belum selesai sebelumnya
+                            ->whereNull('completed_at')
                             ->firstOrFail();
 
-        // Inisialisasi skor mentah (jumlah jawaban benar)
         $rawScore = 0;
-        // Inisialisasi penghitung total soal pilihan ganda
-        $totalMultipleChoiceQuestions = 0; 
+        $totalMultipleChoiceQuestions = 0;
 
-        // Validasi input jawaban dari form
         $validatedData = $request->validate([
-            'questions' => 'required|array', // Pastikan ada array 'questions'
-            'questions.*' => 'required',     // Setiap jawaban pertanyaan harus ada
+            'questions' => 'required|array',
+            'questions.*' => 'required',
         ]);
 
-        // Proses setiap jawaban yang dikirimkan user
         foreach ($validatedData['questions'] as $questionId => $answer) {
             $question = Question::find($questionId);
 
-            // Lewati jika pertanyaan tidak ditemukan (misal: manipulasi data)
             if (!$question) {
                 continue;
             }
 
-            $isCorrect = null;    // Status benar/salah jawaban
-            $optionId = null;     // ID opsi terpilih (untuk pilihan ganda)
-            $answerText = null;   // Teks jawaban (untuk esai)
+            $isCorrect = null;
+            $optionId = null;
+            $answerText = null;
 
-            // Logika penilaian berdasarkan tipe pertanyaan
             if ($question->question_type === 'multiple_choice') {
-                $totalMultipleChoiceQuestions++; // Tambahkan ini: Hitung soal pilihan ganda
-                $optionId = $answer; // Jawaban adalah ID opsi terpilih
+                $totalMultipleChoiceQuestions++;
+                $optionId = $answer;
                 $selectedOption = Option::find($optionId);
 
-                // Memastikan opsi yang dipilih valid dan benar-benar milik pertanyaan ini
                 if ($selectedOption && $selectedOption->question_id === $question->id) {
                     if ($selectedOption->is_correct) {
                         $isCorrect = true;
-                        $rawScore++; // Tambah skor mentah jika jawaban benar
+                        $rawScore++;
                     } else {
                         $isCorrect = false;
                     }
                 } else {
-                    // Jika opsi tidak valid atau tidak cocok dengan pertanyaan, anggap salah
                     $isCorrect = false;
                 }
             } elseif ($question->question_type === 'essay') {
-                $answerText = $answer; // Jawaban adalah teks yang diinput user
-                // Untuk esai, is_correct akan null karena perlu dinilai manual oleh admin
+                $answerText = $answer;
                 $isCorrect = null;
             }
 
-            // Simpan jawaban user ke tabel user_answers
             UserAnswer::create([
                 'user_test_id' => $userTest->id,
                 'question_id' => $question->id,
@@ -271,54 +258,42 @@ class TestController extends Controller
             ]);
         }
 
-        // 🚀 HITUNG SKOR AKHIR SEBAGAI PERSENTASE
         $finalScorePercentage = 0;
         if ($totalMultipleChoiceQuestions > 0) {
-            // Asumsi setiap soal pilihan ganda bernilai sama (misal: 1 poin per soal).
-            // Skor akhir adalah persentase dari jawaban benar pilihan ganda.
             $finalScorePercentage = round(($rawScore / $totalMultipleChoiceQuestions) * 100);
         }
-        // Catatan: Soal esai tidak dihitung dalam skor otomatis ini. Penilaian esai bisa ditambahkan manual nanti.
 
-        // Update skor (sekarang menjadi persentase) dan status tes di entri UserTest
         $userTest->update([
-            'score' => $finalScorePercentage, // ✅ Gunakan skor persentase
+            'score' => $finalScorePercentage,
             'completed_at' => now(),
-            // Status passed ditentukan berdasarkan skor persentase yang mencapai min_score_to_pass
-            'passed' => ($finalScorePercentage >= $test->min_score_to_pass) ? true : false, 
+            'passed' => ($finalScorePercentage >= $test->min_score_to_pass) ? true : false,
         ]);
 
-        // 🚀 LOGIKA REKOMENDASI DIVISI BERDASARKAN SKOR PERSENTASE
-        $recommendedDevisi = null; // Inisialisasi variabel untuk rekomendasi divisi
+        // 🚀 LOGIKA REKOMENDASI DIVISI YANG DIREFACKTOR
+        $recommendedDevisi = null;
 
-        // Ambil semua divisi yang relevan dari database
-        // ✅ PENTING: Pastikan nama-nama divisi di sini SAMA PERSIS dengan kolom `nama_devisi` di tabel `devisi` kamu
-        $devisiKosmetik = Devisi::where('nama_devisi', 'Dept kosmetik')->first();
-        $devisiPkrt = Devisi::where('nama_devisi', 'Dept Pkrt')->first();
-        $devisiAutocare = Devisi::where('nama_devisi', 'Dept. Autocare')->first();
-        $devisiEcommerce = Devisi::where('nama_devisi', 'e-commers')->first();
-        $devisiAccountingFinance = Devisi::where('nama_devisi', 'accounting & finance')->first();
-        $devisiHrdGa = Devisi::where('nama_devisi', 'hrd & ga')->first();
-        $devisiMarketingSales = Devisi::where('nama_devisi', 'marketing & sales')->first();
+        // Ambil semua divisi yang relevan sekali saja dan buat map berdasarkan nama_devisi
+        // Ini lebih efisien daripada query satu per satu
+        $devisisMap = Devisi::all()->keyBy('nama_devisi'); 
 
         // Tentukan rekomendasi berdasarkan finalScorePercentage (sekarang sudah persentase)
-        // Urutan penting: dari skor tertinggi ke terendah, karena satu skor bisa memenuhi banyak kondisi
-        if ($finalScorePercentage >= 80 && $devisiKosmetik) {
-            $recommendedDevisi = $devisiKosmetik;
-        } elseif ($finalScorePercentage >= 75 && $devisiAccountingFinance) {
-            $recommendedDevisi = $devisiAccountingFinance;
-        } elseif ($finalScorePercentage >= 70 && $devisiMarketingSales) {
-            $recommendedDevisi = $devisiMarketingSales;
-        } elseif ($finalScorePercentage >= 65 && $devisiPkrt) {
-            $recommendedDevisi = $devisiPkrt;
-        } elseif ($finalScorePercentage >= 60 && $devisiEcommerce) {
-            $recommendedDevisi = $devisiEcommerce;
-        } elseif ($finalScorePercentage >= 55 && $devisiAutocare) {
-            $recommendedDevisi = $devisiAutocare;
-        } elseif ($finalScorePercentage >= 50 && $devisiHrdGa) {
-            $recommendedDevisi = $devisiHrdGa;
+        // Gunakan $devisisMap->get('Nama Divisi') untuk mengakses objek Devisi
+        if ($finalScorePercentage >= 80 && $devisisMap->has('Dept kosmetik')) {
+            $recommendedDevisi = $devisisMap->get('Dept kosmetik');
+        } elseif ($finalScorePercentage >= 75 && $devisisMap->has('accounting & finance')) {
+            $recommendedDevisi = $devisisMap->get('accounting & finance');
+        } elseif ($finalScorePercentage >= 70 && $devisisMap->has('marketing & sales')) {
+            $recommendedDevisi = $devisisMap->get('marketing & sales');
+        } elseif ($finalScorePercentage >= 65 && $devisisMap->has('Dept Pkrt')) {
+            $recommendedDevisi = $devisisMap->get('Dept Pkrt');
+        } elseif ($finalScorePercentage >= 60 && $devisisMap->has('e-commers')) {
+            $recommendedDevisi = $devisisMap->get('e-commers');
+        } elseif ($finalScorePercentage >= 55 && $devisisMap->has('Dept. Autocare')) {
+            $recommendedDevisi = $devisisMap->get('Dept. Autocare');
+        } elseif ($finalScorePercentage >= 50 && $devisisMap->has('hrd & ga')) {
+            $recommendedDevisi = $devisisMap->get('hrd & ga');
         }
-    
+        // Jika ada divisi lain yang tidak spesifik skornya, atau sebagai rekomendasi default untuk skor sangat rendah, bisa tambahkan di sini
 
         // Simpan ID divisi yang direkomendasikan ke profil user
         if ($recommendedDevisi) {
@@ -327,9 +302,8 @@ class TestController extends Controller
             ]);
             $message = 'Tes berhasil diselesaikan! Skor Anda: ' . $finalScorePercentage . '%. Anda direkomendasikan untuk divisi ' . $recommendedDevisi->nama_devisi . '.';
         } else {
-            // Jika tidak ada rekomendasi yang cocok dengan ambang batas yang ditentukan
             $user->update([
-                'recommended_devisi_id' => null // Set ke null jika tidak ada rekomendasi
+                'recommended_devisi_id' => null
             ]);
             $message = 'Tes berhasil diselesaikan! Skor Anda: ' . $finalScorePercentage . '%. Belum ada rekomendasi divisi yang cocok berdasarkan skor Anda. Anda dapat melihat lowongan pekerjaan yang tersedia.';
         }
@@ -337,7 +311,6 @@ class TestController extends Controller
         // Redirect user ke dashboard pelamar dengan pesan hasil
         return redirect()->route('pelamar.dashboard')->with('success', $message);
     }
-
     public function listUserTests(){
         $userTests = UserTest::with(['user', 'test'])
                              ->orderBy('created_at', 'desc')
