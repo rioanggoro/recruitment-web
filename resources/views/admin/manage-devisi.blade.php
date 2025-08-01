@@ -12,7 +12,7 @@
                     <h5 class="card-title">
                         List Data Devisi
                     </h5>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDevisiModal">Add Devisi</button>
+                    {{-- <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDevisiModal">Add Devisi</button> --}}
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -21,7 +21,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Nama Devisi</th>
-                                    <th class="text-center">Action</th>
+                                    {{-- <th class="text-center">Action</th> --}}
                                 </tr>
                             </thead>
                             <tbody>
@@ -29,12 +29,12 @@
                                     <tr>
                                         <td>{{ $no + 1 }}</td>
                                         <td>{{ $item->nama_devisi }}</td>
-                                        <td class="text-center">
+                                        {{-- <td class="text-center">
                                             <a href="#" class="btn btn-sm btn-warning" data-bs-toggle="modal"
                                                 data-bs-target="#editDevisiModal{{ $item->id }}">Edit</a>
                                             <a href="#" class="btn btn-sm btn-danger" data-bs-toggle="modal"
                                                 data-bs-target="#deleteDevisiModal{{ $item->id }}">Delete</a>
-                                        </td>
+                                        </td> --}}
                                     </tr>
 
                                     <!-- Edit Devisi Modal -->
@@ -157,9 +157,9 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             })
         });
