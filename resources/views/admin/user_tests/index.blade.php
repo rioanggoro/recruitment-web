@@ -43,8 +43,15 @@
                                     <td>{{ $userTest->test->name ?? 'N/A' }}</td>
                                     <td>{{ $userTest->score ?? '-' }}</td>
                                     <td>
-                                        @if ($userTest->passed !== null)
-                                            @if ($userTest->passed)
+                                        @php
+                                            $score = $userTest->score;
+                                            $isPassed = $userTest->passed;
+                                            if ($score !== null && $score < 50) {
+                                                $isPassed = false;
+                                            }
+                                        @endphp
+                                        @if ($isPassed !== null)
+                                            @if ($isPassed)
                                                 <span class="badge bg-success">Lulus</span>
                                             @else
                                                 <span class="badge bg-danger">Tidak Lulus</span>
